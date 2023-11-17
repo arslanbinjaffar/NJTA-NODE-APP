@@ -1,0 +1,27 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+name = "qubioapp"
+client_id = "c817c3a4802616075d2fce9daeb63d49"
+application_url = "https://devapi.qubio.me/"
+embedded = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_products"
+
+[auth]
+redirect_urls = [
+ "https://devapi.qubio.me/api/v1/shopify/auth",
+ "https://devapi.qubio.me/api/v1/shopify/auth/callback",
+ "https://devapi.qubio.me/api/v1/auth/shopify/callback",
+ "https://devapi.qubio.me/api/v1/shopify/auth/callback"
+]
+
+[webhooks]
+api_version = "2023-01"
+
+[pos]
+embedded = false
+
+[build]
+automatically_update_urls_on_dev = true
