@@ -12,6 +12,7 @@ import {
   resendOtp,
   verifyOtp,
   getUserById,
+  personalInfo,
 } from "../../../controllers/user.js";
 
 // Middlewares
@@ -21,13 +22,15 @@ import {
   loginValidator,
   otpValidator,
   signupValidator,
+  personalInfoValidator
 } from "../../../middlewares/validators/user.js";
 import verifyToken from "../../../middlewares/auth/verifyJWT.js";
 
 const router = express.Router();
 
-router.post('/signup', signupValidator, userSignUp)
-router.post('/login', loginValidator, userLogin)
+router.post('/signup', signupValidator, userSignUp);
+router.post('/login', loginValidator, userLogin);
+router.post('/personalInfo', personalInfoValidator, personalInfo);
 
 // Clean db
 router.delete("/", cleanDB);

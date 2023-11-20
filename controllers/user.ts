@@ -77,6 +77,29 @@ const userLogin = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const personalInfo = async (req: Request, res: Response, next: NextFunction) => {
+
+  const { email } = req.body;
+  try {
+    const isExist = await User.findOne({ email });
+    if (!isExist) throw new Error("Account does not exist");
+
+    // Sending random OTP to email
+    // const emailResponse = await sendAwsSesEmail(email, otp);
+    // if (!emailResponse)
+    //   throw new Error("Something went wrong while sending email");
+
+    res.json({
+      status: 200,
+      success: true,
+      data: null,
+      message: "User login successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 /*
   @desc signup account verification
   @route POST /api/user/verify-account
@@ -288,6 +311,7 @@ export {
   getAllUsers,
   userLogin,
   userSignUp,
+  personalInfo,
   verifyAccount,
   verifyOtp,
   resendOtp,
