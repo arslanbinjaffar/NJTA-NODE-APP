@@ -47,6 +47,35 @@ export const loginValidator = (
   next();
 };
 
+// bodyTypes validator
+export const personalInfoValidator = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { email, password } = req.body;
+
+  // Validation Schema
+  const schema = Joi.object({
+    gender: Joi.string().required(),
+    traningGoals: Joi.array().required(),
+    bodyType: Joi.object({
+      height:Joi.string().required(),
+      weight:Joi.string().required(),
+    }),
+    birthday: Joi.date().required(),
+  });
+
+  // Schema Validation
+  const { error } = schema.validate({
+    email,
+    password
+  });
+
+  if (error) next(error);
+  next();
+};
+
 // Signup validator
 export const signupValidator = (
   req: Request,
