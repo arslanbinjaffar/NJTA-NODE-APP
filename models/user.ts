@@ -13,7 +13,7 @@ export interface IUser {
   phoneNumber: string;
   referCode: string;
   email: string;
-  password: string;
+  password?: string;
   role: roles;
 }
 

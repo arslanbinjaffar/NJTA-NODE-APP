@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 // Models
 import qrCodeStyle from "../models/qrCodeStyle.js";
 import QrCode from "../models/qrcode.js";
-import User from "../models/user.js";
+import User, { IUser } from "../models/user.js";
 import Page from "../models/page.js";
 import Global from "../models/globals.js";
 import ContentBlockMetaData from "../models/contentBlocksMetaData.js";
@@ -40,14 +40,20 @@ const userSignUp = async (req: Request, res: Response, next: NextFunction) => {
       phoneNumber,
       password: hashedPassword,
       referCode,
-      role,
-      tenantId
+      role
     });
 
     res.json({
       status: 200,
       success: true,
-      data: result,
+      data: {
+        firstName: result.firstName,
+        lastName: result.lastName,
+        email: result.email,
+        phoneNumber: result.phoneNumber,
+        referCode: result.referCode,
+        role: result.role
+      },
       message: "Staff Created Successfully",
     });
 
@@ -107,7 +113,7 @@ const userLogin = async (req: Request, res: Response, next: NextFunction) => {
     if (!isExist) throw new Error("Account does not exist");
 
     // Load hash from your password DB.
-    const passwordValidity = await bcrypt.compare(password, isExist.password);
+    const passwordValidity = await bcrypt.compare(password, isExist.password!);
     if (!passwordValidity) {
       throw new Error("Invliad Credentials");
     }
