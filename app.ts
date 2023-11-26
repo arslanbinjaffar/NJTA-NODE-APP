@@ -36,7 +36,7 @@ import { errorHandler } from "./middlewares/error/errorHandler.js";
 // import setupSwagger from "./config/swaggerDocumentation/swagger.js";
 import querystring from "querystring";
 import bodyParser from "body-parser";
-import fetch from "node-fetch";
+// import fetch from "node-fetch";
 import { URLSearchParams } from "url";
 import mailchimp from "@mailchimp/mailchimp_marketing";
 

@@ -1,13 +1,14 @@
 import mongoose from "mongoose";
+import jwt from 'jsonwebtoken';
 
 export type roles = "admin" | "manager" | "user"
 // Interface representing a document in MongoDB.
-interface IUser {
+export interface IUser {
   firstName: string;
   lastName: string;
   gender: string;
   traningGoals: string[];
-  birthday: Date;
+  birthday: string;
   bodyType: BodyType;
   phoneNumber: string;
   referCode: string;
@@ -18,7 +19,9 @@ interface IUser {
 
 type BodyType = {
   height: string
+  heightUnit: string
   weight: string
+  weightUnit: string
 }
 
 // User Schema
@@ -29,10 +32,12 @@ const userSchema = new mongoose.Schema<IUser>(
     phoneNumber: String,
     gender: { type: String, default: null },
     traningGoals: { type: [String], default: [] },
-    birthday: { type: Date, default: null },
+    birthday: { type: String, default: null },
     bodyType: {
       height: { type: String, default: null },
+      heightUnit: { type: String, default: null },
       weight: { type: String, default: null },
+      weightUnit: { type: String, default: null },
     },
     email: { type: String, required: true },
     password: { type: String, required: true },

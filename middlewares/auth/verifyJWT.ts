@@ -17,16 +17,17 @@ async function verifyToken(req: Request, res: Response, next: NextFunction) {
     )
       throw new Error("Bearer JWT not found in authorization header");
     const token = req.headers.authorization.split(" ")[1];
-    const decoded = jwt.verify(
+    const { email } = jwt.verify(
       token,
       process.env.JWT_SECERET
     ) as DecodedPayload;
 
+
     // Verifying user email
-    const userData = await User.find({ email: decoded.email });
+    const userData = await User.find({ email });
     if (!userData.length) throw new Error("Invalid token");
 
-    req.body.email = decoded.email;
+    req.body.email = email;
 
     next();
   } catch (error: any) {

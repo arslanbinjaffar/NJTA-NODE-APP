@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
 // Models
 import qrCodeStyle from "../models/qrCodeStyle.js";
@@ -16,14 +18,19 @@ import ContentBlockMetaData from "../models/contentBlocksMetaData.js";
 import generateJWT from "../helper/createJWT.js";
 import { randomOtpGenerator } from "../helper/randomOtpGenerator.js";
 import Tenant from "../models/tenant.js";
+import verifyToken from "../middlewares/auth/verifyJWT.js";
 
 const userSignUp = async (req: Request, res: Response, next: NextFunction) => {
   const { firstName, lastName, email, phoneNumber, password, referCode, role, tenantId } = req.body;
-
   try {
     const isExist = await User.findOne({ email, phoneNumber, tenantId });
-    const isStaffExist = await Tenant.findOne({ email });
-    if (isExist || isStaffExist) throw new Error("Account already exists");
+    if (isExist) throw new Error("Account already exists");
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    if (!hashedPassword) {
+      throw new Error("Invalid credentials already exists");
+    }
 
     // Creating new user
     const result = await User.create({
@@ -31,7 +38,7 @@ const userSignUp = async (req: Request, res: Response, next: NextFunction) => {
       lastName,
       email: email.toLowerCase(),
       phoneNumber,
-      password,
+      password: hashedPassword,
       referCode,
       role,
       tenantId
@@ -49,6 +56,44 @@ const userSignUp = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const updateUserInfo = async (req: Request, res: Response, next: NextFunction) => {
+
+  const { gender,
+    birthday,
+    traningGoals,
+    bodyType: {
+      height,
+      heightUnit,
+      weight,
+      weightUnit,
+    },
+    email
+  } = req.body;
+
+  try {
+    const isExist = await User.findOne({ email });
+    if (!isExist) throw new Error("Account does't exists");
+    isExist.gender = gender;
+    isExist.birthday = birthday,
+      isExist.traningGoals = traningGoals,
+      isExist.bodyType.height = height
+    isExist.bodyType.heightUnit = heightUnit
+    isExist.bodyType.weight = weight,
+      isExist.bodyType.weightUnit = weightUnit
+
+    await isExist.save()
+    res.json({
+      status: 200,
+      success: true,
+      data: "",
+      message: "User info updated Successfully",
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
 /*
   @desc User login
   @route POST /api/user/login
@@ -56,10 +101,19 @@ const userSignUp = async (req: Request, res: Response, next: NextFunction) => {
  */
 const userLogin = async (req: Request, res: Response, next: NextFunction) => {
 
-  const { email } = req.body;
+  const { email, password } = req.body;
   try {
     const isExist = await User.findOne({ email });
     if (!isExist) throw new Error("Account does not exist");
+
+    // Load hash from your password DB.
+    const passwordValidity = await bcrypt.compare(password, isExist.password);
+    if (!passwordValidity) {
+      throw new Error("Invliad Credentials");
+    }
+
+    // generate token
+    const token = jwt.sign({ email }, process.env.JWT_SECERET, { expiresIn: '30d' });
 
     // Sending random OTP to email
     // const emailResponse = await sendAwsSesEmail(email, otp);
@@ -69,7 +123,9 @@ const userLogin = async (req: Request, res: Response, next: NextFunction) => {
     res.json({
       status: 200,
       success: true,
-      data: null,
+      data: {
+        token
+      },
       message: "User login successfully",
     });
   } catch (error) {
@@ -282,12 +338,13 @@ const resendOtp = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 export {
+  userLogin,
+  userSignUp,
+  updateUserInfo,
   cleanDB,
   deleteUser,
   editUser,
   getAllUsers,
-  userLogin,
-  userSignUp,
   verifyAccount,
   verifyOtp,
   resendOtp,

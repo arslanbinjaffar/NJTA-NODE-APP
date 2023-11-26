@@ -83,6 +83,55 @@ export const signupValidator = (
   next();
 };
 
+// update User validator
+export const updateUserInfoValidator = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { gender,
+    birthday,
+    trainingGoals,
+    bodyType: {
+      height,
+      heightUnit,
+      weight,
+      weightUnit
+    }
+  } = req.body;
+
+  console.log(req.body)
+
+  // Validation Schema
+  const schema = Joi.object({
+    gender: Joi.string().required(),
+    birthday: Joi.string().required(),
+    trainingGoals: Joi.array().required(),
+    bodyType: Joi.object({
+      height: Joi.string().required(),
+      heightUnit: Joi.string().required(),
+      weight: Joi.string().required(),
+      weightUnit: Joi.string().required(),
+    }),
+  });
+
+  // Schema Validation
+  const { error } = schema.validate({
+    gender,
+    birthday,
+    trainingGoals,
+    bodyType: {
+      height,
+      weight,
+      heightUnit,
+      weightUnit
+    },
+  });
+
+  if (error) next(error);
+  next();
+};
+
 // Update user
 export const editUserValidator = (
   req: Request,
