@@ -8,6 +8,7 @@ export interface IUser {
   lastName: string;
   gender: string;
   traningGoals: string[];
+  userInfo: boolean;
   birthday: string;
   bodyType: BodyType;
   phoneNumber: string;
@@ -39,6 +40,7 @@ const userSchema = new mongoose.Schema<IUser>(
       weight: { type: String, default: null },
       weightUnit: { type: String, default: null },
     },
+    userInfo: false,
     email: { type: String, required: true },
     password: { type: String, required: true },
     role: { type: String, default: "user" },
