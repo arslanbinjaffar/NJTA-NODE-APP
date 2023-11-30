@@ -85,7 +85,8 @@ const updateUserInfo = async (req: Request, res: Response, next: NextFunction) =
       isExist.bodyType.height = height
     isExist.bodyType.heightUnit = heightUnit
     isExist.bodyType.weight = weight,
-      isExist.bodyType.weightUnit = weightUnit
+      isExist.bodyType.weightUnit = weightUnit;
+    isExist.userInfo = true;
 
     await isExist.save()
     res.json({
