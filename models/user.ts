@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema<IUser>(
       weight: { type: String, default: null },
       weightUnit: { type: String, default: null },
     },
-    userInfo: false,
+    userInfo: { type: Boolean, default: false },
     email: { type: String, required: true },
     password: { type: String, required: true },
     role: { type: String, default: "user" },
